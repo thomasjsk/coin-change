@@ -1,32 +1,43 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Back End Engineering Challenge -- Change
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
+Libera-Bank is building a demonstration for a POS system.  To ensure that cashiers give customers the correct (and optimal) set of change - you will devise an algorithm to compute the change (based on US currency)
+
+- You will create a REST service to:
+  - stock the till with coins (PUT & PATCH), either by replacing the till or just adding coins
+  - return the value of all coins in the till
+  - return the count of each coin in the till
+  - given a change amount ( < $1) - compute the optimal (smallest number of coins) needed to fufill the request (given the current coins in the till); if you can't make change note that
+  - when you make change, remove those coins from the till
   
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+  for example: 
+  - given 10 dimes and 34 pennies in the till; if the change amount were $0.99 you should offer 9 dimes and 9 pennies
+  - given 10 dimes, 3 nickels, and 9 pennies; if the change amount were $0.99 you should offer 9 dimes,  1 nickel, and 4 pennies
+  - given 10 dimes; if the change amount were $0.99 you should report that you can't make change
 
-## Description
+## Requirements:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Do not include a database (for this iteration store all your data 'in-memory')
+- Create tests (either physically or suggest in your README) for any common issues
+- Handle errors (in format a business rules)
+
+- develop your solution as a complete package that will be run by the Libera team
+  - Include a readme and/or instructions for installing and running
+  - Induced instructions on how to run your included test or what those tests are
+  - Document any assumptions you made and issues you encountered
+
+## Useful information
+
+- for U.S. coins, assume:
+  - quarter = 0.25
+  - dime = 0.1
+  - nickel = 0.05
+  - penny = 0.01 
+
+
+## Bonus
+
+- add a method to the service to return the values (< $1) for which you can't make change for (as an array) as well as the minimal set of coins you need to continue to make change
+
 
 ## Installation
 
@@ -59,17 +70,3 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-  Nest is [MIT licensed](LICENSE).
