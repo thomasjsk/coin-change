@@ -47,7 +47,7 @@ Libera-Bank is building a demonstration for a POS system.  To ensure that cashie
 - Project was generated with nest cli and I got rid of some garbage boilerplate (probably not all of it)
 - I wrote simple paths cause there was no need for more complex with given requirements
 - Service starts with an empty state (no coins in till)
-- I thought of adding swagger notations but instead I'm providing exported postman collection
+- I thought of adding swagger notations but instead I'm providing exported postman collection (coin-change.postman_collection.json)
 - I see no point in writing such common algorithm by my own, so I've picked one from the web and modified it to work as I want to.
 I wrote some tests to be sure that it behaves the way I want.
 - I prefer to write unit test for separated layers instead of integration tests for each endpoint. Those should be covered by some API tests
@@ -57,7 +57,8 @@ I wrote some tests to be sure that it behaves the way I want.
 ## Installation
 
 ```bash
-# install node and npm, then:
+# install node and npm (and npm i -g @nestjs/cli maybe) then:
+
 $ npm install
 ```
 
