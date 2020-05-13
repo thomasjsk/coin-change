@@ -1,9 +1,8 @@
-import { Quarter } from './models/quarter';
-import { Dime } from './models/dime';
-import { Nickel } from './models/nickel';
-import { Penny } from './models/penny';
-import { Injectable } from '@nestjs/common';
-import { TILL_STATE } from './initial.state';
+import { QUARTER } from './const/QUARTER';
+import { DIME } from './const/DIME';
+import { NICKEL } from './const/NICKEL';
+import { PENNY } from './const/PENNY';
+import { BadRequestException } from '@nestjs/common';
 
 export interface Stock {
   quarter: number;
@@ -12,22 +11,36 @@ export interface Stock {
   penny: number;
 }
 
-const EMPTY_STOCK: Stock =  {
+const EMPTY_STOCK: Stock = {
   quarter: 0,
   dime: 0,
   nickel: 0,
   penny: 0,
 };
 
-export class Till {
-  private _stock: Stock = {...EMPTY_STOCK};
+const FULL_STOCK: Stock = {
+  quarter: 4,
+  dime: 10,
+  nickel: 20,
+  penny: 100,
+};
 
-  constructor(stock: Stock) {
-    this.stock = stock;
+export class Till {
+  private _stock: Stock = { ...EMPTY_STOCK };
+
+  constructor(stock?: Stock) {
+    if (stock) {
+      this.stock = stock;
+    }
   }
 
   set stock(value: Stock) {
-    this._stock = value;
+    this._stock = {
+      quarter: +value.quarter || 0,
+      dime: +value.dime || 0,
+      nickel: +value.nickel || 0,
+      penny: +value.penny || 0,
+    };
   }
 
   get stock() {
@@ -68,50 +81,72 @@ export class Till {
   }
 
   total(stock: Stock) {
-    return stock.quarter * Quarter + stock.dime * Dime + stock.nickel * Nickel + stock.penny * Penny;
+    return stock.quarter * QUARTER + stock.dime * DIME + stock.nickel * NICKEL + stock.penny * PENNY;
   }
 
-  getChange(demandedChangeInCents): Stock {
-    const NOT_ENOUGH_COINS_ERROR_MESSAGE = 'Not enough coins in till!';
+  getChange(demandedChangeInCents: number): Stock {
+    const { change, newStock } = this.calculateChange(demandedChangeInCents, this.stock);
 
-    const newStock = {...this.stock};
-    const calculatedChange: Stock = {...EMPTY_STOCK};
-    let remainingChange = demandedChangeInCents;
+    const changeInCents = this.total(change);
 
-    while (remainingChange >= Quarter && newStock.quarter) {
-      remainingChange -= Quarter;
-      calculatedChange.quarter++;
-      newStock.quarter--;
-    }
-    while (remainingChange >= Dime && newStock.dime) {
-      remainingChange -= Dime;
-      calculatedChange.dime++;
-      newStock.dime--;
-    }
-    while (remainingChange >= Nickel && newStock.nickel) {
-      remainingChange -= Nickel;
-      calculatedChange.nickel++;
-      newStock.nickel--;
-    }
-    while (remainingChange > 0 && newStock.penny) {
-      remainingChange -= Penny;
-      calculatedChange.penny++;
-      newStock.penny--;
-    }
-
-    const changeInCents = this.total(calculatedChange);
-
-    // console.log('Demands: ', demandedChangeInCents);
-    // console.log('Current stock: ', this.stock);
-    // console.log('Calculated change: ', calculatedChange);
-    // console.log('Found cents: ', changeInCents);
     if (changeInCents !== demandedChangeInCents) {
-      throw new Error(NOT_ENOUGH_COINS_ERROR_MESSAGE);
+      const { quarter, dime, nickel, penny } = this.getMinimumNeededChange(demandedChangeInCents, change);
+
+      const moreQuarter = quarter ? `${quarter} quarter` : null;
+      const moreDime = dime ? `${dime} dime` : null;
+      const moreNickel = nickel ? `${nickel} nickel` : null;
+      const morePenny = penny ? `${penny} penny` : null;
+
+      const missingCoins = [moreQuarter, moreDime, moreNickel, morePenny].filter(message => Boolean(message)).join(', ');
+
+      throw new BadRequestException(`Not enough coins in till! You need more: ${missingCoins}`);
     } else {
       this.stock = newStock;
     }
 
-    return calculatedChange;
+    return change;
   };
+
+  getMinimumNeededChange(demandedChangeInCents: number, tempChange: Stock) {
+    const { change } = this.calculateChange(demandedChangeInCents, { ...FULL_STOCK });
+
+    return {
+      quarter: Math.max(0, change.quarter - tempChange.quarter),
+      dime: Math.max(0, change.dime - tempChange.dime),
+      nickel: Math.max(0, change.nickel - tempChange.nickel),
+      penny: Math.max(0, change.penny - tempChange.penny),
+    };
+  }
+
+  private calculateChange(demandedChangeInCents: number, stock: Stock): {
+    change: Stock, newStock: Stock
+  } {
+    const change: Stock = { ...EMPTY_STOCK };
+    const newStock = { ...stock };
+    let remainingChange = demandedChangeInCents;
+
+    while (remainingChange >= QUARTER && newStock.quarter) {
+      remainingChange -= QUARTER;
+      change.quarter++;
+      newStock.quarter--;
+    }
+    while (remainingChange >= DIME && newStock.dime) {
+      remainingChange -= DIME;
+      change.dime++;
+      newStock.dime--;
+    }
+    while (remainingChange >= NICKEL && newStock.nickel) {
+      remainingChange -= NICKEL;
+      change.nickel++;
+      newStock.nickel--;
+    }
+    while (remainingChange > 0 && newStock.penny) {
+      remainingChange -= PENNY;
+      change.penny++;
+      newStock.penny--;
+    }
+
+    return { change, newStock };
+  }
 }
 
