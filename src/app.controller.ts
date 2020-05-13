@@ -1,12 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { TillService } from './till.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly tillService: TillService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get(':cents')
+  getChange(
+    @Param('cents', new ParseIntPipe())
+    cents: number,
+  ) {
+    return this.tillService.getChange(cents);
   }
 }

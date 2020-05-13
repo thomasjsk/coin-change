@@ -1,8 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Till } from './till';
+import { Stock, Till } from './till';
+import { TILL_STATE } from './initial.state';
 
 @Injectable()
 export class TillService {
-  constructor(private till: Till){
+  private till: Till;
+  constructor(){
+    this.till = new Till(TILL_STATE)
+  }
+
+  getChange(cents: number): Stock {
+    return this.till.getChange(cents);
   }
 }

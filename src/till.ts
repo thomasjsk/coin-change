@@ -19,11 +19,10 @@ const EMPTY_STOCK: Stock =  {
   penny: 0,
 };
 
-@Injectable()
 export class Till {
   private _stock: Stock = {...EMPTY_STOCK};
 
-  constructor(stock: Stock = TILL_STATE) {
+  constructor(stock: Stock) {
     this.stock = stock;
   }
 
